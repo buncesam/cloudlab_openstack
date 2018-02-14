@@ -71,7 +71,7 @@ PSCP='/usr/bin/parallel-scp -t 0 -O StrictHostKeyChecking=no '
 #    "trusty-updates/juno main" > /etc/apt/sources.list.d/cloudarchive-juno.list
 
 #sudo add-apt-repository ppa:ubuntu-cloud-archive/juno-staging
-#sudo add-apt-repository ppa:ubuntu-cloud-archive/juno-staging 
+#sudo add-apt-repository ppa:ubuntu-cloud-archive/juno-staging
 
 #
 # Setup mail to users
@@ -435,7 +435,7 @@ EOF
             # Try the EOL version...
             wget -O /var/www/cgi-bin/keystone/admin "http://git.openstack.org/cgit/openstack/keystone/plain/httpd/keystone.py?h=${OSCODENAME}-eol"
 	fi
-	cp -p /var/www/cgi-bin/keystone/admin /var/www/cgi-bin/keystone/main 
+	cp -p /var/www/cgi-bin/keystone/admin /var/www/cgi-bin/keystone/main
 	chown -R keystone:keystone /var/www/cgi-bin/keystone
 	chmod 755 /var/www/cgi-bin/keystone/*
     elif [ $OSVERSION -ge $OSLIBERTY -a $KEYSTONEUSEWSGI -eq 1 \
@@ -2726,7 +2726,7 @@ if [ -z "${CEILOMETER_DBPASS}" ]; then
 	service_enable mongodb
 
 	MDONE=1
-	while [ $MDONE -ne 0 ]; do 
+	while [ $MDONE -ne 0 ]; do
 	    sleep 1
 	    mongo --host ${MGMTIP} --eval "db = db.getSiblingDB(\"ceilometer\"); db.addUser({user: \"ceilometer\", pwd: \"${CEILOMETER_DBPASS}\", roles: [ \"readWrite\", \"dbAdmin\" ]})"
 	    MDONE=$?
@@ -2824,7 +2824,7 @@ if [ -z "${CEILOMETER_DBPASS}" ]; then
 
     if [ $USING_GNOCCHI -eq 0 -a "${CEILOMETER_USE_MONGODB}" = "1" ]; then
 	crudini --set /etc/ceilometer/ceilometer.conf database \
-	    connection "mongodb://ceilometer:${CEILOMETER_DBPASS}@${MGMTIP}:27017/ceilometer" 
+	    connection "mongodb://ceilometer:${CEILOMETER_DBPASS}@${MGMTIP}:27017/ceilometer"
     elif [ $USING_GNOCCHI -eq 0 ]; then
 	crudini --set /etc/ceilometer/ceilometer.conf database \
 	    connection "${DBDSTRING}://ceilometer:${CEILOMETER_DBPASS}@$CONTROLLER/ceilometer?charset=utf8"
@@ -3653,9 +3653,9 @@ if [ -z "${TROVE_DBPASS}" ]; then
     crudini --set /etc/trove/trove-taskmanager.conf DEFAULT \
 	taskmanager_manager trove.taskmanager.manager.Manager
     crudini --set /etc/trove/trove-taskmanager.conf DEFAULT \
-	
+
     crudini --set /etc/trove/trove-taskmanager.conf DEFAULT \
-	
+
     # A few more things for the main conf file
     crudini --set /etc/trove/trove.conf DEFAULT default_datastore mysql
     crudini --set /etc/trove/trove.conf DEFAULT add_addresses True
@@ -3824,7 +3824,7 @@ if [ -z "${SAHARA_DBPASS}" ]; then
     else
 	# This may fail because sahara's migration scripts use ALTER TABLE,
         # which sqlite doesn't support
-	maybe_install_packages sahara-common 
+	maybe_install_packages sahara-common
 	aserr=$?
 	maybe_install_packages sahara-api sahara-engine
     fi
@@ -4455,6 +4455,7 @@ subnet_id=`openstack network show -f shell flat-lan-1-net | grep "^subnets=" | c
 openstack port create --network ${network_id} --fixed-ip subnet=${subnet_id},ip-address=10.11.10.21 testport1
 openstack port create --network ${network_id} --fixed-ip subnet=${subnet_id},ip-address=10.11.10.22 testport2
 openstack port create --network ${network_id} --fixed-ip subnet=${subnet_id},ip-address=10.11.10.23 testport3
+openstack port create --network ${network_id} --fixed-ip subnet=${subnet_id},ip-address=10.11.10.24 testport4
 
 # See https://docs.openstack.org/project-install-guide/baremetal/draft/configure-glance-images.html
 wget -O /tmp/setup/OL7.vmdk https://clemson.box.com/shared/static/mnjgd608gwpm2lzywrgbbkw1eqdet2di.vmdk
@@ -4464,10 +4465,16 @@ project_id=`openstack project list -f value | grep admin | cut -d' ' -f 1`
 flavor_id=`openstack flavor list -f value | grep m1.small | cut -d' ' -f 1`
 image_id=`openstack image list -f value | grep OL7 | cut -d' ' -f 1`
 security_id=`openstack security group list -f value | grep $project_id | cut -d' ' -f 1`
-port_id=`openstack port list -f value | grep testport3 | cut -d' ' -f 1`
 
 # See https://docs.openstack.org/mitaka/install-guide-ubuntu/launch-instance-selfservice.html
-openstack server create --flavor m1.medium --security-group $security_id --image OL7 --nic port-id=$port_id headnode
+port_id=`openstack port list -f value | grep testport1 | cut -d' ' -f 1`
+openstack server create --flavor m1.medium --security-group $security_id --image OL7 --nic port-id=$port_id node1
+port_id=`openstack port list -f value | grep testport2 | cut -d' ' -f 1`
+openstack server create --flavor m1.medium --security-group $security_id --image OL7 --nic port-id=$port_id node2
+port_id=`openstack port list -f value | grep testport3 | cut -d' ' -f 1`
+openstack server create --flavor m1.medium --security-group $security_id --image OL7 --nic port-id=$port_id node3
+port_id=`openstack port list -f value | grep testport4 | cut -d' ' -f 1`
+openstack server create --flavor m1.medium --security-group $security_id --image OL7 --nic port-id=$port_id node4
 
 
 echo "***"
