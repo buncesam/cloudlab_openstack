@@ -4459,15 +4459,15 @@ openstack port create --network ${network_id} --fixed-ip subnet=${subnet_id},ip-
 openstack port create --network ${network_id} --fixed-ip subnet=${subnet_id},ip-address=10.11.10.25 testport5
 openstack port create --network ${network_id} --fixed-ip subnet=${subnet_id},ip-address=10.11.10.26 testport6
 
-project_id=`openstack project list -f value | grep admin | cut -d' ' -f 1`
-flavor_id=`openstack flavor list -f value | grep m1.small | cut -d' ' -f 1`
-image_id=`openstack image list -f value | grep OL7 | cut -d' ' -f 1`
-security_id=`openstack security group list -f value | grep $project_id | cut -d' ' -f 1`
-
 ### HEAD NODE
 # See https://docs.openstack.org/project-install-guide/baremetal/draft/configure-glance-images.html
 wget -O /tmp/setup/OL7.vmdk https://clemson.box.com/shared/static/io1zvpb4rl2yojkn1qka1gbv5fg92480.vmdk
 glance image-create --name OL7 --disk-format vmdk --visibility public --container-format bare < /tmp/setup/OL7.vmdk
+
+project_id=`openstack project list -f value | grep admin | cut -d' ' -f 1`
+flavor_id=`openstack flavor list -f value | grep m1.small | cut -d' ' -f 1`
+image_id=`openstack image list -f value | grep OL7 | cut -d' ' -f 1`
+security_id=`openstack security group list -f value | grep $project_id | cut -d' ' -f 1`
 
 # See https://docs.openstack.org/mitaka/install-guide-ubuntu/launch-instance-selfservice.html
 port_id=`openstack port list -f value | grep testport1 | cut -d' ' -f 1`
@@ -4481,6 +4481,11 @@ rm /tmp/setup/OL7.vmdk
 wget -O /tmp/setup/OL7_Compute.vmdk https://clemson.box.com/shared/static/5c7h0ua3jr4ywf4ipeuxj3o4j6hyp356.vmdk
 glance image-delete $image_id
 glance image-create --name Compute --disk-format vmdk --visibility public --container-format bare < /tmp/setup/OL7_Compute.vmdk
+
+project_id=`openstack project list -f value | grep admin | cut -d' ' -f 1`
+flavor_id=`openstack flavor list -f value | grep m1.small | cut -d' ' -f 1`
+image_id=`openstack image list -f value | grep Compute | cut -d' ' -f 1`
+security_id=`openstack security group list -f value | grep $project_id | cut -d' ' -f 1`
 
 port_id=`openstack port list -f value | grep testport2 | cut -d' ' -f 1`
 openstack server create --flavor m1.medium --security-group $security_id --image Compute --nic port-id=$port_id compute1
@@ -4498,6 +4503,11 @@ rm /tmp/setup/OL7_Compute.vmdk
 wget -O /tmp/setup/OL7_Scratch.vmdk https://clemson.box.com/shared/static/8d73exewozamhgfxlcy2ncrcn9xk8x1f.vmdk
 glance image-delete $image_id
 glance image-create --name Scratch --disk-format vmdk --visibility public --container-format bare < /tmp/setup/OL7_Scratch.vmdk
+
+project_id=`openstack project list -f value | grep admin | cut -d' ' -f 1`
+flavor_id=`openstack flavor list -f value | grep m1.small | cut -d' ' -f 1`
+image_id=`openstack image list -f value | grep Scratch | cut -d' ' -f 1`
+security_id=`openstack security group list -f value | grep $project_id | cut -d' ' -f 1`
 
 port_id=`openstack port list -f value | grep testport5 | cut -d' ' -f 1`
 openstack server create --flavor m1.medium --security-group $security_id --image Scratch --nic port-id=$port_id scratch1
