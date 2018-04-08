@@ -4462,23 +4462,18 @@ openstack port create --network ${network_id} --fixed-ip subnet=${subnet_id},ip-
 
 # See https://docs.openstack.org/project-install-guide/baremetal/draft/configure-glance-images.html
 wget -O /tmp/setup/OL7.vmdk https://clemson.box.com/shared/static/io1zvpb4rl2yojkn1qka1gbv5fg92480.vmdk
-glance image-create --name OL7 --disk-format vmdk --visibility public --id OL7_ID --container-format bare < /tmp/setup/OL7.vmdk
-glance image-delete --id OL7_ID
+glance image-create --name OL7 --disk-format vmdk --visibility public --container-format bare < /tmp/setup/OL7.vmdk
 
 # Testing different file locations -- /tmp/setup -> /run/user/2001
 #wget -O /run/user/2001/OL7_Compute.vmdk https://clemson.box.com/shared/static/5c7h0ua3jr4ywf4ipeuxj3o4j6hyp356.vmdk
 wget -O /tmp/setup/OL7_Compute.vmdk https://clemson.box.com/shared/static/5c7h0ua3jr4ywf4ipeuxj3o4j6hyp356.vmdk
-
-# adding --id flags to image-create and adding image-delete
-glance image-create --name Compute --disk-format vmdk --visibility public --id OL7_Compute_ID --container-format bare < /tmp/setup/OL7_Compute.vmdk
-glance image-delete --id OL7_Compute_ID
+glance image-delete $image_id
+glance image-create --name Compute --disk-format vmdk --visibility public --container-format bare < /tmp/setup/OL7_Compute.vmdk
 
 #wget -O /run/user/2001/OL7_Scratch.vmdk https://clemson.box.com/shared/static/8d73exewozamhgfxlcy2ncrcn9xk8x1f.vmdk
 wget -O /tmp/setup/OL7_Scratch.vmdk https://clemson.box.com/shared/static/8d73exewozamhgfxlcy2ncrcn9xk8x1f.vmdk
-
-# adding --id flags to image-create and adding image-delete
-glance image-create --name Scratch --disk-format vmdk --visibility public --id OL7_Scratch_ID --container-format bare < /tmp/setup/OL7_Scratch.vmdk
-glance image-delete --id OL7_Scratch_ID
+glance image-delete $image_id
+glance image-create --name Scratch --disk-format vmdk --visibility public --container-format bare < /tmp/setup/OL7_Scratch.vmdk
 
 project_id=`openstack project list -f value | grep admin | cut -d' ' -f 1`
 flavor_id=`openstack flavor list -f value | grep m1.small | cut -d' ' -f 1`
