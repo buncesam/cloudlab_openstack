@@ -4474,12 +4474,12 @@ port_id=`openstack port list -f value | grep testport1 | cut -d' ' -f 1`
 openstack server create --flavor m1.medium --security-group $security_id --image OL7 --nic port-id=$port_id head
 
 rm /tmp/setup/OL7.vmdk
+glance image-delete $image_id
 
 ### COMPUTE NODES
 # Testing different file locations -- /tmp/setup -> /run/user/2001
 # wget -O /run/user/2001/OL7_Compute.vmdk https://clemson.box.com/shared/static/5c7h0ua3jr4ywf4ipeuxj3o4j6hyp356.vmdk
 wget -O /tmp/setup/OL7_Compute.vmdk https://clemson.box.com/shared/static/5c7h0ua3jr4ywf4ipeuxj3o4j6hyp356.vmdk
-glance image-delete $image_id
 glance image-create --name Compute --disk-format vmdk --visibility public --container-format bare < /tmp/setup/OL7_Compute.vmdk
 
 project_id=`openstack project list -f value | grep admin | cut -d' ' -f 1`
@@ -4497,11 +4497,11 @@ port_id=`openstack port list -f value | grep testport4 | cut -d' ' -f 1`
 openstack server create --flavor m1.medium --security-group $security_id --image Compute --nic port-id=$port_id compute3
 
 rm /tmp/setup/OL7_Compute.vmdk
+glance image-delete $image_id
 
 ### SCRATCH NODES
 #wget -O /run/user/2001/OL7_Scratch.vmdk https://clemson.box.com/shared/static/8d73exewozamhgfxlcy2ncrcn9xk8x1f.vmdk
 wget -O /tmp/setup/OL7_Scratch.vmdk https://clemson.box.com/shared/static/8d73exewozamhgfxlcy2ncrcn9xk8x1f.vmdk
-glance image-delete $image_id
 glance image-create --name Scratch --disk-format vmdk --visibility public --container-format bare < /tmp/setup/OL7_Scratch.vmdk
 
 project_id=`openstack project list -f value | grep admin | cut -d' ' -f 1`
@@ -4516,6 +4516,7 @@ port_id=`openstack port list -f value | grep testport6 | cut -d' ' -f 1`
 openstack server create --flavor m1.medium --security-group $security_id --image Scratch --nic port-id=$port_id scratch2
 
 rm /tmp/setup/OL7_Scratch.vmdk
+glance image-delete $image_id
 
 echo "***"
 echo "*** Done with OpenStack Setup!"
